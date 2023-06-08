@@ -94,13 +94,15 @@ async function harvestAllPlants(x, y) {
     method: "GET",
   });
 
-  const slotIds = land.data[0].slots.map((slot) => slot._id);
+  const slotsNeedHarvest = land.data[0].slots.map(
+    (slot) => slot.harvestTime < Date.now()
+  );
 
   // * Thu hoạch
   const { data: res } = await axios({
     url: "https://api.plantvsundead.com/farms/harvest-plant",
     headers: requestHeaders,
-    data: { slotIds },
+    data: { slotIds: slotsNeedHarvest.map((slot) => slot._id) },
     method: "POST",
   });
   consola.success("Kết quả thu hoạch", res);
