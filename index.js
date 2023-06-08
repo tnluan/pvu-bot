@@ -1,14 +1,14 @@
 const axios = require("axios");
 
 const requestHeaders = {
-  authorization: "bearerHeader <JWT>",
+  authorization: "bearerHeader " + process.env.PVU_JWT,
   "content-type": "application/json;charset=UTF-8",
 };
 
-(async function () {
+async function chaseCrowAndWatering(x, y) {
   // * Lấy thông tin land
   const { data: land } = await axios({
-    url: "https://api.plantvsundead.com/lands/get-by-coordinate?x=55&y=25", // đổi tọa độ land tại đây
+    url: `https://api.plantvsundead.com/lands/get-by-coordinate?x=${x}&y=${y}`, // đổi tọa độ land tại đây
     headers: requestHeaders,
     method: "GET",
   });
@@ -79,4 +79,15 @@ const requestHeaders = {
     });
     console.log("Kết quả tưới nước", res);
   });
+}
+
+function setImmediateThenInterval(func, seconds) {
+  setImmediate(func);
+  setInterval(func, seconds * 1000);
+}
+
+(() => {
+  setImmediateThenInterval(() => {
+    chaseCrowAndWatering(55, 25);
+  }, 60);
 })();
