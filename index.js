@@ -13,7 +13,7 @@ async function chaseCrowAndWatering(x, y) {
     method: "GET",
   });
 
-  console.log(land.data[0].slots.map((slot) => slot._id));
+  // console.log(land.data[0].slots.map((slot) => slot._id));
 
   // * Lọc slot cần đuổi quạ và slot cần tưới nước
   const slotsHaveCrow = land.data[0].slots.filter(
@@ -59,26 +59,50 @@ async function chaseCrowAndWatering(x, y) {
   }
 
   // * Đuổi quạ
-  slotsHaveCrow.forEach(async (slot) => {
-    const { data: res } = await axios({
-      url: "https://api.plantvsundead.com/farms/chase-crow",
-      headers: requestHeaders,
-      data: { slotId: slot._id },
-      method: "POST",
-    });
-    console.log("Kết quả đuổi quạ", res);
-  });
+  await Promise.all(
+    slotsHaveCrow.map(async (slot) => {
+      const { data: res } = await axios({
+        url: "https://api.plantvsundead.com/farms/chase-crow",
+        headers: requestHeaders,
+        data: { slotId: slot._id },
+        method: "POST",
+      });
+      console.log("Kết quả đuổi quạ", res);
+    })
+  );
 
   // * Tưới nước
-  slotsNeedWater.forEach(async (slot) => {
-    const { data: res } = await axios({
-      url: "https://api.plantvsundead.com/farms/water-plant",
-      headers: requestHeaders,
-      data: { slotId: slot._id },
-      method: "POST",
-    });
-    console.log("Kết quả tưới nước", res);
+  await Promise.all(
+    slotsNeedWater.map(async (slot) => {
+      const { data: res } = await axios({
+        url: "https://api.plantvsundead.com/farms/water-plant",
+        headers: requestHeaders,
+        data: { slotId: slot._id },
+        method: "POST",
+      });
+      console.log("Kết quả tưới nước", res);
+    })
+  );
+}
+
+async function harvestAllPlants(x, y) {
+  // * Lấy thông tin land
+  const { data: land } = await axios({
+    url: `https://api.plantvsundead.com/lands/get-by-coordinate?x=${x}&y=${y}`, // đổi tọa độ land tại đây
+    headers: requestHeaders,
+    method: "GET",
   });
+
+  const slotIds = land.data[0].slots.map((slot) => slot._id);
+
+  // * Thu hoạch
+  const { data: res } = await axios({
+    url: "https://api.plantvsundead.com/farms/harvest-plant",
+    headers: requestHeaders,
+    data: { slotIds },
+    method: "POST",
+  });
+  console.log("Kết quả thu hoạch", res);
 }
 
 function setImmediateThenInterval(func, seconds) {
@@ -87,7 +111,8 @@ function setImmediateThenInterval(func, seconds) {
 }
 
 (() => {
-  setImmediateThenInterval(() => {
-    chaseCrowAndWatering(55, 25);
+  setImmediateThenInterval(async () => {
+    await chaseCrowAndWatering(55, 25);
+    await harvestAllPlants(55, 25);
   }, 60);
 })();
