@@ -94,7 +94,7 @@ async function harvestAllPlants(x, y) {
     method: "GET",
   });
 
-  const slotsNeedHarvest = land.data[0].slots.map(
+  const slotsNeedHarvest = land.data[0].slots.filter(
     (slot) => slot.harvestTime < Date.now()
   );
 
