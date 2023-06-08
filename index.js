@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { consola } = require("consola");
 
 const requestHeaders = {
   authorization: "bearerHeader " + process.env.PVU_JWT,
@@ -13,7 +14,7 @@ async function chaseCrowAndWatering(x, y) {
     method: "GET",
   });
 
-  // console.log(land.data[0].slots.map((slot) => slot._id));
+  // consola.info(land.data[0].slots.map((slot) => slot._id));
 
   // * Lọc slot cần đuổi quạ và slot cần tưới nước
   const slotsHaveCrow = land.data[0].slots.filter(
@@ -41,7 +42,7 @@ async function chaseCrowAndWatering(x, y) {
       },
       method: "POST",
     });
-    console.log("Kết quả mua tool đuổi quạ", res);
+    consola.success("Kết quả mua tool đuổi quạ", res);
   }
 
   // * Nếu số lượng tool tưới nước thấp hơn cây cần tưới, mua thêm tool
@@ -55,7 +56,7 @@ async function chaseCrowAndWatering(x, y) {
       },
       method: "POST",
     });
-    console.log("Kết quả mua tool tưới nước", res);
+    consola.success("Kết quả mua tool tưới nước", res);
   }
 
   // * Đuổi quạ
@@ -67,7 +68,7 @@ async function chaseCrowAndWatering(x, y) {
         data: { slotId: slot._id },
         method: "POST",
       });
-      console.log("Kết quả đuổi quạ", res);
+      consola.success("Kết quả đuổi quạ", res);
     })
   );
 
@@ -80,7 +81,7 @@ async function chaseCrowAndWatering(x, y) {
         data: { slotId: slot._id },
         method: "POST",
       });
-      console.log("Kết quả tưới nước", res);
+      consola.success("Kết quả tưới nước", res);
     })
   );
 }
@@ -102,7 +103,7 @@ async function harvestAllPlants(x, y) {
     data: { slotIds },
     method: "POST",
   });
-  console.log("Kết quả thu hoạch", res);
+  consola.success("Kết quả thu hoạch", res);
 }
 
 function setImmediateThenInterval(func, seconds) {
@@ -112,7 +113,11 @@ function setImmediateThenInterval(func, seconds) {
 
 (() => {
   setImmediateThenInterval(async () => {
-    await chaseCrowAndWatering(55, 25);
-    await harvestAllPlants(55, 25);
+    try {
+      await chaseCrowAndWatering(55, 25);
+      await harvestAllPlants(55, 25);
+    } catch (err) {
+      consola.error(err.response.data.data);
+    }
   }, 60);
 })();
