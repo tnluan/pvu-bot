@@ -95,7 +95,7 @@ async function harvestAllPlants(x, y) {
   });
 
   const slotsNeedHarvest = land.data[0].slots.filter(
-    (slot) => slot.harvestTime < Date.now()
+    (slot) => slot.harvestTime && slot.harvestTime < Date.now()
   );
 
   // * Thu hoạch
