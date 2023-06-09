@@ -1,12 +1,19 @@
 const axios = require("axios");
+const jwt_decode = require("jwt-decode");
 const { consola } = require("consola");
+require("dotenv").config();
+
+const PVU_JWT = process.env.PVU_JWT;
 
 const requestHeaders = {
-  authorization: "bearerHeader " + process.env.PVU_JWT,
+  authorization: "bearerHeader " + PVU_JWT,
   "content-type": "application/json;charset=UTF-8",
 };
 
 async function chaseCrowAndWatering(x, y) {
+  // * Lấy địa chỉ ví dùng để lọc những slot có ownerId trùng với địa chỉ này
+  const { publicAddress } = jwt_decode(PVU_JWT);
+
   // * Lấy thông tin land
   const { data: land } = await axios({
     url: `https://api.plantvsundead.com/lands/get-by-coordinate?x=${x}&y=${y}`, // đổi tọa độ land tại đây
@@ -18,10 +25,10 @@ async function chaseCrowAndWatering(x, y) {
 
   // * Lọc slot cần đuổi quạ và slot cần tưới nước
   const slotsHaveCrow = land.data[0].slots.filter(
-    (slot) => slot.actionInfos.isHaveCrow
+    (slot) => slot.actionInfos.isHaveCrow && slot.ownerId === publicAddress
   );
   const slotsNeedWater = land.data[0].slots.filter(
-    (slot) => slot.actionInfos.isNeedWater
+    (slot) => slot.actionInfos.isNeedWater && slot.ownerId === publicAddress
   );
 
   // * Lấy thông tin user
@@ -87,6 +94,9 @@ async function chaseCrowAndWatering(x, y) {
 }
 
 async function harvestAllPlants(x, y) {
+  // * Lấy địa chỉ ví dùng để lọc những slot có ownerId trùng với địa chỉ này
+  const { publicAddress } = jwt_decode(PVU_JWT);
+
   // * Lấy thông tin land
   const { data: land } = await axios({
     url: `https://api.plantvsundead.com/lands/get-by-coordinate?x=${x}&y=${y}`, // đổi tọa độ land tại đây
@@ -95,7 +105,10 @@ async function harvestAllPlants(x, y) {
   });
 
   const slotsNeedHarvest = land.data[0].slots.filter(
-    (slot) => slot.harvestTime && slot.harvestTime < Date.now()
+    (slot) =>
+      slot.harvestTime &&
+      slot.harvestTime < Date.now() &&
+      slot.ownerId === publicAddress
   );
 
   // * Thu hoạch
