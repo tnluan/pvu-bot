@@ -44,7 +44,7 @@ async function chaseCrowAndWatering(x, y) {
       url: "https://api.plantvsundead.com/shops/buy-tools",
       headers: requestHeaders,
       data: {
-        toolType: 2,
+        toolType: 1,
         quantity: slotsHaveCrow.length - user.data.chaseCrowTools,
       },
       method: "POST",
@@ -58,8 +58,8 @@ async function chaseCrowAndWatering(x, y) {
       url: "https://api.plantvsundead.com/shops/buy-tools",
       headers: requestHeaders,
       data: {
-        toolType: 1,
-        quantity: slotsHaveCrow.length - user.data.chaseCrowTools,
+        toolType: 2,
+        quantity: slotsNeedWater.length - user.data.wateringTools,
       },
       method: "POST",
     });
