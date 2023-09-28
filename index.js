@@ -66,7 +66,7 @@ async function chaseCrowAndWatering(x, y) {
     consola.success("Kết quả mua tool tưới nước", res);
   }
 
-  // * Đuổi quạ
+  // * Đuổi quạ xấu
   await Promise.all(
     slotsHaveCrow.map(async (slot) => {
       const { data: res } = await axios({
@@ -75,7 +75,20 @@ async function chaseCrowAndWatering(x, y) {
         data: { slotId: slot._id },
         method: "POST",
       });
-      consola.success("Kết quả đuổi quạ", res);
+      consola.success("Kết quả đuổi quạ xấu", res);
+    })
+  );
+
+  // * Đuổi quạ tốt
+  await Promise.all(
+    slotsHaveCrow.map(async (slot) => {
+      const { data: res } = await axios({
+        url: "https://api.plantvsundead.com/farms/chase-good-crow",
+        headers: requestHeaders,
+        data: { slotId: slot._id },
+        method: "POST",
+      });
+      consola.success("Kết quả đuổi quạ tốt", res);
     })
   );
 
