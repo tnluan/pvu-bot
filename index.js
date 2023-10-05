@@ -174,7 +174,7 @@ async function stealAroundPlants(x, y) {
         data: { slotId: slot._id },
         method: "POST",
       });
-      consola.success("Kết quả thu hoạch trộm", coordinate, res);
+      consola.success("Kết quả thu hoạch trộm", coordinate, slot._id, res);
     }
   }
 }
