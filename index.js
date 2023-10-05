@@ -134,6 +134,51 @@ async function harvestAllPlants(x, y) {
   consola.success("Kết quả thu hoạch", res);
 }
 
+async function stealAroundPlants(x, y) {
+  // * Lấy địa chỉ ví dùng để lọc những slot có ownerId khác với địa chỉ này
+  const { publicAddress } = jwt_decode(PVU_JWT);
+
+  const aroundPlants = [
+    [x - 1, y - 1],
+    [x - 1, y],
+    [x - 1, y + 1],
+    [x, y - 1],
+    [x, y],
+    [x, y + 1],
+    [x + 1, y - 1],
+    [x + 1, y],
+    [x + 1, y + 1],
+  ];
+
+  for (const coordinate of aroundPlants) {
+    // * Lấy thông tin land
+    const { data: land } = await axios({
+      url: `https://api.plantvsundead.com/lands/get-by-coordinate?x=${coordinate[0]}&y=${coordinate[1]}`,
+      headers: requestHeaders,
+      method: "GET",
+    });
+
+    const slotsNeedSteal = land.data[0].slots.filter(
+      (slot) =>
+        slot.harvestTime &&
+        slot.harvestTime < Date.now() &&
+        slot.ownerId !== publicAddress &&
+        [1, 4, 5, 6, 7, 8].includes(slot.plantInfos.faction)
+    );
+
+    for (const slot of slotsNeedSteal) {
+      // * Thu hoạch trộm
+      const { data: res } = await axios({
+        url: "https://api.plantvsundead.com/farms/steal",
+        headers: requestHeaders,
+        data: { slotId: slot._id },
+        method: "POST",
+      });
+      consola.success("Kết quả thu hoạch trộm", coordinate, res);
+    }
+  }
+}
+
 function setImmediateThenInterval(func, seconds) {
   setImmediate(func);
   setInterval(func, seconds * 1000);
@@ -142,10 +187,17 @@ function setImmediateThenInterval(func, seconds) {
 (() => {
   setImmediateThenInterval(async () => {
     try {
-      await chaseCrowAndWatering(55, 25);
-      await harvestAllPlants(55, 25);
+      await chaseCrowAndWatering(23, 40);
+      await chaseCrowAndWatering(23, 41);
+      await chaseCrowAndWatering(23, 42);
+
+      await harvestAllPlants(23, 40);
+      await harvestAllPlants(23, 41);
+      await harvestAllPlants(23, 42);
+
+      await stealAroundPlants(23, 41);
     } catch (err) {
       consola.error(err.response.data.data);
     }
-  }, 60);
+  }, 180);
 })();
