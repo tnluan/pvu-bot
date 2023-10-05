@@ -199,5 +199,5 @@ function setImmediateThenInterval(func, seconds) {
     } catch (err) {
       consola.error(err.response.data.data);
     }
-  }, 180);
+  }, 120);
 })();
