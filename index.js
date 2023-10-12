@@ -28,7 +28,10 @@ async function chaseCrowAndWatering(x, y) {
     (slot) => slot.actionInfos.isHaveCrow && slot.ownerId === publicAddress
   );
   const slotsHaveGoodCrow = land.data[0].slots.filter(
-    (slot) => slot.decoEffects.isGoodCrow && slot.ownerId === publicAddress
+    (slot) =>
+      slot.decoEffects &&
+      slot.decoEffects.isGoodCrow &&
+      slot.ownerId === publicAddress
   );
   const slotsNeedWater = land.data[0].slots.filter(
     (slot) => slot.actionInfos.isNeedWater && slot.ownerId === publicAddress
