@@ -168,8 +168,8 @@ async function stealAroundPlants(x, y) {
       (slot) =>
         slot.harvestTime &&
         slot.harvestTime < Date.now() &&
-        slot.ownerId !== publicAddress &&
-        [1, 4, 5, 6, 7, 8].includes(slot.plantInfos.faction)
+        slot.ownerId !== publicAddress
+        // [1, 4, 5, 6, 7, 8].includes(slot.plantInfos.faction)
     );
 
     for (const slot of slotsNeedSteal) {
