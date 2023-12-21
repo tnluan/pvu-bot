@@ -1,6 +1,6 @@
 let map = ''
 
-fetch('https://pvuhelper.info:8081/103.116.39.158:1569/listlandmap.txt').then(res => res.text()).then(text => map = text)
+fetch('https://pvuhelper.info:8081/103.169.35.1:1569/listlandmap.txt').then(res => res.text()).then(text => map = text)
 
 map.split('\r\n').forEach(land => {
   const slots = land.split('|')
@@ -14,17 +14,17 @@ map.split('\r\n').forEach(land => {
   for (let i = 1; i < 7; ++i) {
     let has6SlotCont = true
 
-    for (let j = 0; j < 6; ++j) {
+    for (let j = 0; j < 7; ++j) {
       if (mapping[i + '-' + j] !== '0') has6SlotCont = false
     }
 
-    if (!has6SlotCont) {
-      has6SlotCont = true
+    // if (!has6SlotCont) {
+    //   has6SlotCont = true
 
-      for (let j = 1; j < 7; ++j) {
-        if (mapping[i + '-' + j] !== '0') has6SlotCont = false
-      }
-    }
+    //   for (let j = 1; j < 7; ++j) {
+    //     if (mapping[i + '-' + j] !== '0') has6SlotCont = false
+    //   }
+    // }
 
     if (has6SlotCont) has6SlotInSameColumn = true
   }
